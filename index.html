@@ -7,9 +7,45 @@
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-        <h1>Snake Game - should be animated from right to left, another word added when eat an apple or something</h1>
-        <div id="grid"></div>
-        <div id="scorePanel">Score: <span id="score">0</span></div>
+        <div id="namePopup">
+        <div class="popupBox">
+            <p>Made by <strong>Chen Tsairi</strong></p>
+            <button onclick="closeNamePopup()">Start Game</button>
+        </div>
+        </div>
+
+        <div id="gameContainer">
+            <div id="headerContainer">
+                <div id="headerApplesContainer">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                    <img id="snake_apple_header" src="./images/snake_apple.png" alt="snake_apple_header">
+                </div>
+                <div id="headerLettersContainer">
+                    <img id="snake_head_header" src="./images/snake_close_mouth.png" alt="snake_header">
+                    <img id="snake_letter_header" src="./images/Snake_S.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_N.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_A.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_K.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_E.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_-.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_G.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_A.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_M.png" alt="snake_letter_header">
+                    <img id="snake_letter_header" src="./images/Snake_E.png" alt="snake_letter_header">
+                </div>
+            </div>
+            <div id="grid"></div>
+            <div id="scorePanel">Score: <span id="score">0</span></div>
+        </div>
+        
         <div id="gameOverPanel" class="hidden">
             <div class="gamOverBox">
                 <h2>💀 Game Over</h2>

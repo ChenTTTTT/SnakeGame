@@ -1,6 +1,7 @@
 const grid = document.getElementById("grid");
 const gameOverPanel = document.getElementById("gameOverPanel");
 const scoreElement = document.getElementById("score");
+const headerLettersContainer = document.getElementById("headerLettersContainer");
 
 const Direction = {
     UP: 'UP',
@@ -25,6 +26,12 @@ const slotImages = {
     [SlotState.TAIL]: "images/snake_tail.png",
 };
 
+// name popup
+function closeNamePopup() {
+    document.getElementById("namePopup").classList.add("hidden");
+    startGame();
+}
+
 // keys
 document.addEventListener("keydown", (e) => {
     switch (e.key.toLowerCase()) {
@@ -48,13 +55,16 @@ let touchStartX = 0;
 let touchStartY = 0;
 
 document.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
-});
+    if (e.touches.length > 1) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+}, { passive: false });
 
 document.addEventListener("touchend", (e) => {
-    const touchEndX = e.changedTouches[0].screenX;
-    const touchEndY = e.changedTouches[0].screenY;
+    if (e.changedTouches.length === 0) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
 
     const dx = touchEndX - touchStartX;
     const dy = touchEndY - touchStartY;
@@ -66,9 +76,11 @@ document.addEventListener("touchend", (e) => {
         if (dy > 30) playerInput(Direction.DOWN);
         else if (dy < -30) playerInput(Direction.UP);
     }
-});
+}, { passive: false });
+
 
 // game
+let gameStarted = false;
 let isGameOver = false;
 let gameLoopInterval;
 let directionBuffer = null;
@@ -85,13 +97,20 @@ let snakePos = {
 let snake = [];
 
 let currentDirection = Direction.DOWN;
+let currentHeadRotation = 0;
 
 let score = 0;
 
-drawGame();
-setGameVariables();
-spawnFood();
-gameLoopInterval = setInterval(gameLoop, 300);
+function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+
+    drawGame();
+    headerAnimations();
+    setGameVariables();
+    spawnFood();
+    gameLoopInterval = setInterval(gameLoop, 300);
+}
 
 function drawGame() {
     for (let y = 0; y < rowGrid; y++) {
@@ -117,7 +136,7 @@ function drawGame() {
 
     setTimeout(() => {
         gridData[0][0].state = SlotState.HEAD;
-        animateScaleIn(gridData[0][0].img);
+        applyTransform(gridData[0][0].img, 1, currentHeadRotation);
     }, 100);
 }
 
@@ -137,6 +156,7 @@ function gameLoop(){
             row: currentSnakeHeadPos.row,
             column: currentSnakeHeadPos.column,
         };
+        
         switch (currentDirection) {
             case Direction.UP:
                 nextSnakeHeadPos.row--;
@@ -178,6 +198,21 @@ function playerInput(newDirection){
     if (directionBuffer !== null) return;
 
     directionBuffer = newDirection;
+
+    switch (directionBuffer) {
+        case Direction.UP:
+            currentHeadRotation = 180;
+            break;
+        case Direction.DOWN:
+            currentHeadRotation = 0;
+            break;
+        case Direction.LEFT:
+            currentHeadRotation = 90;
+            break;
+        case Direction.RIGHT:
+            currentHeadRotation = -90;
+            break;
+    }
 }
 
 function updateSnakeMovement(nextPos) {
@@ -257,6 +292,8 @@ function restartGame() {
     score = 0;
     updateScore(0);
 
+    currentHeadRotation = 0;
+
     snake = [{ row: 0, column: 0 }];
     currentDirection = Direction.DOWN;
 
@@ -289,38 +326,56 @@ function setSlotState(y, x, newState) {
     slot.state = newState;
 
     if (newState === SlotState.EMPTY) {
-        animateScaleOut(slot.img);
+        applyTransform(slot.img, 0, currentHeadRotation);
         return;
     }
 
     slot.img.src = slotImages[newState];
-    animateScaleIn(slot.img);
+    applyTransform(slot.img, 1, currentHeadRotation);
 }
 
 function getSlotState(y, x) {
     return gridData[y][x]?.state ?? SlotState.EMPTY;
 }
 
+function getSlotImg(y, x) {
+    return gridData[y][x]?.img ?? null;
+}
+
 // animations
 function animateScaleIn(imgElement) {
-    imgElement.classList.remove("scale-out");
-    void imgElement.offsetWidth;
-    imgElement.classList.add("scale-in");
+    imgElement.style.transform = `scale(1) rotate(${currentHeadRotation}deg)`;
+    imgElement.style.transition = "transform 0.2s ease-in-out";
+    // imgElement.classList.remove("scale-out");
+    // void imgElement.offsetWidth;
+    // imgElement.classList.add("scale-in");
 }
 
 function animateScaleOut(imgElement) {
-    imgElement.classList.remove("scale-in");
-    void imgElement.offsetWidth;
-    imgElement.classList.add("scale-out");
+    imgElement.style.transform = `scale(0) rotate(${currentHeadRotation}deg)`;
+    imgElement.style.transition = "transform 0.2s ease-in-out";
+    // imgElement.classList.remove("scale-in");
+    // void imgElement.offsetWidth;
+    // imgElement.classList.add("scale-out");
 }
 
-function animateSlot(y, x, type = "in") {
-    const img = gridData[y][x].img;
-    if (!img) return;
+function applyTransform(imgElement, scale = 1, rotation = 0) {
+  imgElement.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+  imgElement.style.transition = "transform 0.2s forwards";
+}
 
-    if (type === "in") {
-        animateScaleIn(img);
-    } else {
-        animateScaleOut(img);
-    }
+function headerAnimations(){
+    const letters = [...document.querySelectorAll('[id^="snake_letter_header"]'),];
+    const apples = [...document.querySelectorAll('[id^="snake_apple_header"]'),].reverse();
+    headerLettersContainer.classList.add("header-animate");
+    setTimeout(() => {
+        apples.forEach((apple, i) => {
+        setTimeout(() => {
+            apple.classList.add("apple-animate");
+            if (i < letters.length) {
+                letters[i].classList.add("letter-animate");
+            } 
+        }, i * 200); // animate one by one, from right to left
+        });
+    }, 900); // initial delay
 }
