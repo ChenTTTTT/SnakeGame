@@ -26,6 +26,11 @@ const slotImages = {
     [SlotState.TAIL]: "images/snake_tail.png",
 };
 
+const snakeHeaderImages = {
+    CLOSED_MOUTH: "images/snake_close_mouth.png",
+    OPENED_MOUTH: "images/snake_open_mouth.png",
+};
+
 // name popup
 function closeNamePopup() {
     document.getElementById("namePopup").classList.add("hidden");
@@ -365,17 +370,24 @@ function applyTransform(imgElement, scale = 1, rotation = 0) {
 }
 
 function headerAnimations(){
+    const headSnakeHeader = document.getElementById("snake_head_header");
     const letters = [...document.querySelectorAll('[id^="snake_letter_header"]'),];
     const apples = [...document.querySelectorAll('[id^="snake_apple_header"]'),].reverse();
     headerLettersContainer.classList.add("header-animate");
     setTimeout(() => {
+        headSnakeHeader.src = snakeHeaderImages.OPENED_MOUTH;
+    }, 700);
+    setTimeout(() => {
         apples.forEach((apple, i) => {
-        setTimeout(() => {
-            apple.classList.add("apple-animate");
-            if (i < letters.length) {
-                letters[i].classList.add("letter-animate");
-            } 
-        }, i * 200); // animate one by one, from right to left
+            setTimeout(() => {
+                apple.classList.add("apple-animate");
+                if (i < letters.length) {
+                    letters[i].classList.add("letter-animate");
+                }
+            }, i * 200);
         });
-    }, 900); // initial delay
+    }, 900);
+    setTimeout(() => {
+        headSnakeHeader.src = snakeHeaderImages.CLOSED_MOUTH;
+    }, (apples.length * 200) + 900);
 }
