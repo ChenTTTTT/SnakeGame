@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Snake Game</title>
+        <link rel="stylesheet" href="./style.css">
+    </head>
+    <body>
+        <h1>Snake Game - should be animated from right to left, another word added when eat an apple or something</h1>
+        <div id="grid"></div>
+        <div id="scorePanel">Score: <span id="score">0</span></div>
+        <div id="gameOverPanel" class="hidden">
+            <div class="gamOverBox">
+                <h2>💀 Game Over</h2>
+                <button onclick="restartGame()">Restart</button>
+            </div>
+        </div>
+    </body>
+    <script src="./script.js"></script>
+</html>
